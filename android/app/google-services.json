@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "420482776288",
+    "project_id": "yaarbanao",
+    "storage_bucket": "yaarbanao.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:420482776288:android:08c798d9a058d4e4372485",
+        "android_client_info": {
+          "package_name": "com.heavenonthisearth.garena"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "420482776288-vfcopgg743i08a47k0a1pdllufvcl8q9.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD-1DcLbZBYipGM0b32NIInaoP8x9QwaZg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "420482776288-vfcopgg743i08a47k0a1pdllufvcl8q9.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "420482776288-imhcrbsh8ir2kpf9krr6e2gadhqenv0s.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.heavenonthisearth.yaarBanao"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

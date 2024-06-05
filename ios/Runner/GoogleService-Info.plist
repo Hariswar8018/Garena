@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>API_KEY</key>
+	<string>AIzaSyDRa3CJ6Pl7OcPheLI4BOTy5C8bB_gnzn4</string>
+	<key>GCM_SENDER_ID</key>
+	<string>420482776288</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.heavenonthisearth.garena</string>
+	<key>PROJECT_ID</key>
+	<string>yaarbanao</string>
+	<key>STORAGE_BUCKET</key>
+	<string>yaarbanao.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:420482776288:ios:a7625cf77c488e30372485</string>
+</dict>
+</plist>
