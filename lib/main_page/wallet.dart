@@ -1,9 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:garena/Cards/transaction_card.dart';
 import 'package:garena/login/login_screen.dart';
 import 'package:garena/main.dart';
+import 'package:garena/main_page/history.dart';
 import 'package:garena/models/providers.dart';
+import 'package:garena/models/transaction.dart';
 import 'package:garena/models/user_model.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
@@ -13,7 +16,7 @@ import 'add_money.dart';
 class Wallet extends StatelessWidget {
   Wallet({super.key});
 
-  List<Payments> list = [];
+  List<TransactionModel> list = [];
 
   late Map<String, dynamic> userMap ;
 
@@ -73,8 +76,10 @@ class Wallet extends StatelessWidget {
                                   Row(
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
-                                      Icon(Icons.diamond, color: Colors.orange, size : 51),
-                                      Text(_user!.Won.toString(),
+                                      Text("₹",
+                                          style:
+                                          TextStyle(fontWeight: FontWeight.w900, fontSize: 40)),
+                                      Text(((_user!.Won).toInt()).toString(),
                                           style: TextStyle(
                                               fontWeight: FontWeight.w900,
                                               fontSize: 40))
@@ -108,8 +113,10 @@ class Wallet extends StatelessWidget {
                                   Row(
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
-                                      Icon(Icons.diamond, color: Colors.orange, size : 30),
-                                      Text(" 30",
+                                      Text("₹",
+                                          style:
+                                          TextStyle(fontWeight: FontWeight.w900, fontSize: 29)),
+                                      Text(((_user!.bonus).toInt()).toString(),
                                           style: TextStyle(
                                               fontWeight: FontWeight.w900,
                                               fontSize: 24))
@@ -135,17 +142,17 @@ class Wallet extends StatelessWidget {
                     children: [
                       g(
                           "Deposited",
-                          "50",
+                          _user!.deposit,
                           Icon(Icons.diamond, color: Colors.orange),
                           context),
                       g(
                           "Utilized",
-                          "1",
+                          _user!.utilize,
                           Icon(Icons.diamond, color: Colors.orange),
                           context),
                       g(
                           "Winned",
-                          "53",
+                          _user!.win,
                           Icon(Icons.diamond, color: Colors.orange),
                           context),
                     ],
@@ -169,9 +176,9 @@ class Wallet extends StatelessWidget {
                       Navigator.push(
                           context,
                           PageTransition(
-                              child: History(),
+                              child: History(st:FirebaseAuth.instance.currentUser!.uid),
                               type: PageTransitionType.leftToRight,
-                              duration: Duration(milliseconds: 800)));
+                              duration: Duration(milliseconds: 100)));
                     },
                     child: Text("Show All",
                         style: TextStyle(
@@ -191,9 +198,7 @@ class Wallet extends StatelessWidget {
               width: MediaQuery.of(context).size.width,
               child: StreamBuilder(
                   stream: FirebaseFirestore.instance
-                      .collection('users')
-                      .doc(user)
-                      .collection("Transaction")
+                      .collection("Transaction").where("nameUid",isEqualTo: FirebaseAuth.instance.currentUser!.uid)
                       .snapshots(),
                   builder: (context, snapshot) {
                     switch (snapshot.connectionState) {
@@ -204,7 +209,7 @@ class Wallet extends StatelessWidget {
                       case ConnectionState.done:
                         final data = snapshot.data?.docs;
                         list = data
-                                ?.map((e) => Payments.fromJson(e.data()))
+                                ?.map((e) => TransactionModel.fromJson(e.data()))
                                 .toList() ??
                             [];
                         if (list.isEmpty) {
@@ -215,8 +220,8 @@ class Wallet extends StatelessWidget {
                             padding: EdgeInsets.only(top: 1),
                             physics: BouncingScrollPhysics(),
                             itemBuilder: (context, index) {
-                              return ChatUser(
-                                user: list[index],
+                              return ChatUserW(
+                                user: list[index],admin:false
                               );
                             },
                           );
@@ -227,67 +232,84 @@ class Wallet extends StatelessWidget {
           ],
         ),
         persistentFooterButtons: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              Container(
-                height: 45,
-                width: MediaQuery.of(context).size.width / 2 - 15,
-                child: ElevatedButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => Add_Money(
-                                  bh: true,
-                                )),
-                      );
-                    },
-                    style: ButtonStyle(
-                      minimumSize: MaterialStateProperty.all(
-                          Size(double.infinity, double.infinity)),
-                      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                        RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(
-                              5.0), // Adjust the radius as needed
-                        ),
-                      ),
-                      backgroundColor:
-                          MaterialStateProperty.all<Color>(Colors.blue),
-                    ),
-                    child:
-                        Text("Deposit", style: TextStyle(color: Colors.white))),
+          Padding(
+            padding: const EdgeInsets.only(left:35.0,right:35),
+            child: Container(
+              height: 40,
+              decoration: BoxDecoration(
+                border: Border.all(
+                  color:Colors.black,
+                  width:1,
+                ),borderRadius: BorderRadius.circular(10)
               ),
-              Container(
-                  height: 45,
-                  width: MediaQuery.of(context).size.width / 2 - 15,
-                  child: ElevatedButton(
-                      style: ButtonStyle(
-                        minimumSize: MaterialStateProperty.all(
-                            Size(double.infinity, double.infinity)),
-                        shape:
-                            MaterialStateProperty.all<RoundedRectangleBorder>(
-                          RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(
-                                5.0), // Adjust the radius as needed
-                          ),
-                          // Change background color here
-                        ),
-                        backgroundColor:
-                            MaterialStateProperty.all<Color>(Colors.blue),
+              child: Padding(
+                padding: const EdgeInsets.all(4.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    Container(
+                      height: 35,
+                      width: 95,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(10),
+                        color:  Color(0xffB39BE5)
                       ),
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => Add_Money(
-                                    bh: false,
-                                  )),
-                        );
-                      },
-                      child: Text("WithDraw",
-                          style: TextStyle(color: Colors.white))))
-            ],
+                      child: ElevatedButton(
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => Add_Money(
+                                        bh: true,
+                                      )),
+                            );
+                          },
+                          style: ButtonStyle(
+                            minimumSize: MaterialStateProperty.all(
+                                Size(double.infinity, double.infinity)),
+                            shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                              RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(
+                                    5.0), // Adjust the radius as needed
+                              ),
+                            ),
+                            backgroundColor: MaterialStateProperty.all<Color>(Color(0xffB39BE5)),
+                          ),
+                          child:
+                              Text("Deposit", style: TextStyle(color: Colors.white))),
+                    ),
+                    Container(
+                        height: 35,
+                        width: 105,
+                        child: ElevatedButton(
+                            style: ButtonStyle(
+                              minimumSize: MaterialStateProperty.all(
+                                  Size(double.infinity, double.infinity)),
+                              shape:
+                                  MaterialStateProperty.all<RoundedRectangleBorder>(
+                                RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(
+                                      5.0), // Adjust the radius as needed
+                                ),
+                                // Change background color here
+                              ),
+                              backgroundColor: MaterialStateProperty.all<Color>(Color(0xffB39BE5)),
+                            ),
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => Add_Money(
+                                          bh: false,
+                                        )),
+                              );
+                            },
+                            child: Text("WithDraw",
+                                style: TextStyle(color: Colors.white))))
+                  ],
+                ),
+              ),
+            ),
           ),
         ],
       ),
@@ -334,7 +356,8 @@ class Wallet extends StatelessWidget {
     );
   }
 
-  Widget g(String h, String j, Widget a, BuildContext context) {
+  Widget g(String h, double j, Widget a, BuildContext context) {
+    int o = j.toInt();
     return Container(
         width: MediaQuery.of(context).size.width / 3 - 20,
         height: MediaQuery.of(context).size.width / 3 - 35,
@@ -351,8 +374,10 @@ class Wallet extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  a,
-                  Text(" $j",
+                  Text("₹",
+                      style:
+                      TextStyle(fontWeight: FontWeight.w900, fontSize: 29)),
+                  Text(" $o",
                       style:
                           TextStyle(fontWeight: FontWeight.w900, fontSize: 22))
                 ],
@@ -366,94 +391,3 @@ class Wallet extends StatelessWidget {
   }
 }
 
-class ChatUser extends StatelessWidget {
-  Payments user;
-
-  ChatUser({required this.user});
-
-  @override
-  Widget build(BuildContextcontext) {
-    return ListTile(
-      title: Text("Amount Credited",
-          style: TextStyle(fontWeight: FontWeight.w700, fontSize: 18)),
-      subtitle: Text("Credited from " + user.id,
-          style: TextStyle(fontWeight: FontWeight.w400, fontSize: 11)),
-      trailing: Text(" +  ₹" + user.amount,
-          style: TextStyle(
-              fontWeight: FontWeight.w900, fontSize: 18, color: Colors.green)),
-    );
-  }
-}
-
-class History extends StatelessWidget {
-  History({super.key});
-
-  List<Payments> list = [];
-
-  late Map<String, dynamic> userMap;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-        width: MediaQuery.of(context).size.width,
-        height: MediaQuery.of(context).size.height,
-        decoration: BoxDecoration(
-          image: DecorationImage(
-              fit: BoxFit.cover,
-              image: AssetImage(
-                  "assets/Screenshot_2024-01-20-14-04-58-25_8ee8015dd2b473d44c46c2d8d6942cec.jpg")),
-        ),
-        child: Scaffold(
-          backgroundColor: Colors.transparent,
-          appBar: AppBar(
-            backgroundColor: Colors.transparent,
-            iconTheme: IconThemeData(
-              color: Colors.white,
-            ),
-            automaticallyImplyLeading: false,
-            title: Text(
-              "My Transaction History",
-              style: TextStyle(
-                  color: Colors.black,
-                  fontSize: 18,
-                  fontWeight: FontWeight.w600),
-            ),
-            elevation: 0,
-          ),
-          body: StreamBuilder(
-              stream: FirebaseFirestore.instance
-                  .collection('users')
-                  .doc(user)
-                  .collection("Transaction")
-                  .snapshots(),
-              builder: (context, snapshot) {
-                switch (snapshot.connectionState) {
-                  case ConnectionState.waiting:
-                  case ConnectionState.none:
-                    return Center(child: CircularProgressIndicator());
-                  case ConnectionState.active:
-                  case ConnectionState.done:
-                    final data = snapshot.data?.docs;
-                    list = data
-                            ?.map((e) => Payments.fromJson(e.data()))
-                            .toList() ??
-                        [];
-                    if (list.isEmpty) {
-                      return Center(child: Text("No Transaction to show"));
-                    } else {
-                      return ListView.builder(
-                        itemCount: list.length,
-                        padding: EdgeInsets.only(top: 1),
-                        physics: BouncingScrollPhysics(),
-                        itemBuilder: (context, index) {
-                          return ChatUser(
-                            user: list[index],
-                          );
-                        },
-                      );
-                    }
-                }
-              }),
-        ));
-  }
-}

@@ -52,7 +52,9 @@ dependencies:
   uuid: ^4.2.2
   omni_datetime_picker: ^1.0.9
   simple_progress_indicators: ^0.2.0
-  instamojo: ^1.0.0+2
+  flutter_upi_pay: ^0.0.2
+  upi_payment_qrcode_generator: ^1.4.0
+  intl: ^0.17.0
 
 dev_dependencies:
   flutter_test:
@@ -71,7 +73,7 @@ dev_dependencies:
 flutter_launcher_icons:
   android: "launcher_icon"
   ios: true
-  image_path: "assets/e24bec2c-ed3c-4332-9918-15b90536832b.jpg"
+  image_path: "assets/logo.jpg"
   min_sdk_android: 21 # android min sdk min:16, default 21
 
 # For information on the generic Dart part of this file, see the

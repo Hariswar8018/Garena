@@ -60,7 +60,7 @@ class _SignUpState extends State<SignUp> {
 
     await FirebaseAuth.instance.signInWithCredential(creditential);
 
-    if (FirebaseAuth.instance.currentUser != null) {
+    if (FirebaseAuth.instance.currentUser != 0.0) {
       print("Successfull");
       print('${FirebaseAuth.instance.currentUser!.displayName} signedin.');
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
@@ -163,15 +163,15 @@ class _SignUpState extends State<SignUp> {
                             UserModel u = UserModel(Chess_Level: "", Email: _emailController.text, Name: username.text,
                                 Pic_link: "", Bio: "", Draw: 0, Gender: "Male",
                                 Language: _nameController.text + _name1Controller.text , Location: "", Lose: 0,
-                                Talk: "NA", Won: 0, uid: sn, Lat: 0, Lon: 0,
-                                lastlogin: "n", code: "", age: "21", lastloginn: "n") ;
+                                Talk: "NA", Won: 0.2, uid: sn, Lat: 8.8, Lon: 9.3,
+                                lastlogin: "n", code: "", age: "21", lastloginn: "n", bonus: 0.0, deposit: 0.0,  utilize: 0.0, win: 0.0) ;
                             await _firestore.collection('users').doc(sn).set(u.toJson());
                             Navigator.push(
                                 context,
                                 PageTransition(
                                     child: Navigation(),
                                     type: PageTransitionType.rightToLeft,
-                                    duration: Duration(milliseconds: 800)));
+                                    duration: Duration(milliseconds: 100)));
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
                                 content: Text('Welcome to Game Terminal ' + _nameController.text + _name1Controller.text ),
@@ -224,7 +224,7 @@ class _SignUpState extends State<SignUp> {
                                     PageTransition(
                                         child: LoginScreen(),
                                         type: PageTransitionType.leftToRight,
-                                        duration: Duration(milliseconds: 800)));
+                                        duration: Duration(milliseconds: 100)));
                               },
                               child: Text("ALready have Account? Log in"),
                             ),

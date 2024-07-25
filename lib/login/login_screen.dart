@@ -166,7 +166,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           TextButton(onPressed: () {
                             Navigator.push(
                                 context, PageTransition(
-                                child: Forgot(), type: PageTransitionType.rightToLeft, duration: Duration(milliseconds: 800)
+                                child: Forgot(), type: PageTransitionType.rightToLeft, duration: Duration(milliseconds: 100)
                             ));
                           }, child: Text("Forgot Password?"),),
                         ]
@@ -189,7 +189,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             );
                             Navigator.push(
                                 context, PageTransition(
-                                child: Navigation(), type: PageTransitionType.rightToLeft, duration: Duration(milliseconds: 800)
+                                child: Navigation(), type: PageTransitionType.rightToLeft, duration: Duration(milliseconds: 100)
                             ));
 
                           } on FirebaseAuthException catch (e) {
@@ -238,7 +238,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             child: TextButton(onPressed: () {
                               Navigator.push(
                                   context, PageTransition(
-                                  child: SignUp(), type: PageTransitionType.rightToLeft, duration: Duration(milliseconds: 800)
+                                  child: SignUp(), type: PageTransitionType.rightToLeft, duration: Duration(milliseconds: 100)
                               ));
                             }, child: Text("Don't have Account? Sign Up"),),
                           ),

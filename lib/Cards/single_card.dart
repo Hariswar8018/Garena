@@ -5,11 +5,16 @@ import 'package:garena/Cards/no_money.dart';
 import 'package:garena/models/game_models.dart';
 import 'package:garena/models/providers.dart';
 import 'package:garena/models/user_model.dart';
+import 'package:garena/other/result.dart';
+import 'package:garena/page/register.dart';
 import 'package:provider/provider.dart';
 
 class Single_C extends StatelessWidget {
   GameModel user ;
-   Single_C({super.key, required this.user});
+  String gname ;
+  String glevel ;
+  int i ;
+   Single_C({super.key, required this.user, required this.gname, required this.glevel, required this.i});
   TextEditingController cs = TextEditingController();
   TextEditingController cd = TextEditingController();
   @override
@@ -45,7 +50,7 @@ class Single_C extends StatelessWidget {
                 children: [
                   g("Map", user.Mapp, Icon(Icons.map_rounded, color : Colors.green, size : 30), context),
                   g("Team", user.Team, Icon(Icons.supervised_user_circle, color : Colors.blue, size : 30), context),
-                  g("Level", user.Level, Icon(Icons.star_sharp, color : Colors.yellow, size : 30), context),
+                  g("Rank", user.Rank, Icon(Icons.star_sharp, color : Colors.yellow, size : 30), context),
                 ],
               ),
               SizedBox(height : 10),
@@ -53,12 +58,11 @@ class Single_C extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  g("TYPE", user.Type, Icon(Icons.accessibility, color : Colors.orange, size : 30), context),
-                  g("VIEW", user.Type, Icon(Icons.remove_red_eye, color : Colors.red, size : 30), context),
+                  g("TYPE", user.Type, Icon(Icons.local_fire_department, color : Colors.orange, size : 30), context),
+                  g("VIEW", user.Version, Icon(Icons.remove_red_eye, color : Colors.red, size : 30), context),
                   g("SERVER", user.Server, Icon(Icons.language, color : Colors.purple, size : 30), context),
                 ],
               ),
-
               SizedBox(height : 30),
               r("Game Details"),
               SizedBox(height : 15),
@@ -66,8 +70,8 @@ class Single_C extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  g("Hosted By", user.hostedby, Icon(Icons.person, color : Colors.pink, size : 30), context),
-                  g("GAME ID", user.hosteid, Icon(Icons.gamepad, color : Colors.blue, size : 30), context),
+                  g("Hosted By", as(user.Name,10), Icon(Icons.person, color : Colors.pink, size : 30), context),
+                  g("GAME ID", as(user.hosteid,6), Icon(Icons.gamepad, color : Colors.blue, size : 30), context),
                   g("Host Name", user.hostedby, Icon(Icons.person_pin, color : Colors.orange, size : 30), context),
                 ],
               ),
@@ -141,108 +145,23 @@ class Single_C extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       Text("Entry", style : TextStyle(color : Colors.grey, fontSize: 13, fontWeight: FontWeight.w600)),
-                      Text("100/SOLO", style: TextStyle(fontWeight: FontWeight.w900, fontSize: 18),)
+                      Text("₹ ${user.Fee.toString()}/SOLO", style: TextStyle(fontWeight: FontWeight.w900, fontSize: 18),)
                     ],
                   ),
                   Spacer(),
                   ElevatedButton( onPressed :() async {
-                    showDialog(
-                      context: context,
-                      builder: (BuildContext context) {
-                        // Create the AlertDialog
-                        return AlertDialog(
-                          backgroundColor: Colors.transparent,
-                          elevation: 0,
-                          content: Container(
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(10),
-                              image: DecorationImage(
-                                  fit: BoxFit.cover,
-                                  image: AssetImage(
-                                      "assets/Screenshot_2024-01-20-14-04-58-25_8ee8015dd2b473d44c46c2d8d6942cec.jpg")),
-                            ),
-                            height: 370,
-                            width : MediaQuery.of(context).size.width,
-                            child: Center(
-                              child: Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Column(
-                                  mainAxisAlignment:
-                                  MainAxisAlignment.start,
-                                  crossAxisAlignment:
-                                  CrossAxisAlignment.start,
-                                  children: <Widget>[
-                                    Row(
-                                      mainAxisAlignment: MainAxisAlignment.start,
-                                      crossAxisAlignment: CrossAxisAlignment.center,
-                                      children: [
-                                        IconButton(
-                                            onPressed: () {
-                                              Navigator.pop(context);
-                                            },
-                                            icon: Icon(Icons.backspace, color : Colors.black)),
-                                        Text("PLAYBEES.IO",
-                                            style: TextStyle(
-                                                fontWeight:
-                                                FontWeight.w900,
-                                                color: Colors.black)),
-                                      ],
-                                    ),
-                                    SizedBox(height: 10),
-                                    Padding(
-                                      padding: const EdgeInsets.only(
-                                          left: 10.0, right: 10),
-                                      child: TextFormField(
-                                        controller: cs,
-                                        decoration: InputDecoration(
-                                          label: Text("BGMI Username"),
-                                        ),
-                                      ),
-                                    ),
-                                    Padding(
-                                      padding: const EdgeInsets.only(
-                                          left: 10.0, right: 10),
-                                      child: TextFormField(
-                                        controller: cd,
-                                        decoration: InputDecoration(
-                                          label: Text("BGMI ID"),
-                                        ),
-                                      ),
-                                    ),
-                                    SizedBox(height: 20),
-                                    Text("Note : ROOM ID and Password will be displayed in Leagues or Registered Matches before 15 min of each time", textAlign : TextAlign.center,),
-                                    SizedBox(height: 24),
-                                    Padding(
-                                      padding: const EdgeInsets.all(8.0),
-                                      child: Container(
-                                        width: MediaQuery.of(context)
-                                            .size
-                                            .width,
-                                        height: 40,
-                                        child: Expanded(
-                                          child: ElevatedButton(
-                                            onPressed: () async {
-
-                                            },
-                                            child: Text("REGISTER",
-                                                style: TextStyle(
-                                                  color: Colors.black, )),
-                                            style: ElevatedButton.styleFrom(
-                                                backgroundColor:
-                                                Colors.purple.shade100),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ),
-                        );
-                      },
-                    );
-                  }, child : Text("JOIN", style : TextStyle(color : Colors.black)),
+                    if(user.Participants.contains('${_user!.uid}')){
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => Mumm(user : user, gname: gname, i: i, glevel: glevel,)),
+                      );
+                    }else{
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => Register(user : user, gname: gname, i: i, glevel: glevel,)),
+                      );
+                    }
+                  }, child : Text(user.Participants.contains('${_user!.uid}')?"VIEW":"JOIN", style : TextStyle(color : Colors.black)),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.purple.shade100
                     ),),
@@ -253,6 +172,13 @@ class Single_C extends StatelessWidget {
         ),
       ),
     );
+  }
+  String as(String s,int j){
+    try{
+      return s.substring(0,j);
+    }catch(e){
+      return s;
+    }
   }
   Widget gv( String h , String j, Widget a , BuildContext context){
     return Container(
@@ -267,9 +193,9 @@ class Single_C extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          a,
+          Text(h,style : TextStyle( fontWeight: FontWeight.w900, fontSize: 21,color:Colors.blue),),
           SizedBox(height : 3),
-          Text(j, style : TextStyle( fontWeight: FontWeight.w800, fontSize: 15), textAlign : TextAlign.center)
+          Text("₹ "+j, style : TextStyle( fontWeight: FontWeight.w800, fontSize: 15), textAlign : TextAlign.center)
         ],
       ),
     ));

@@ -28,7 +28,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => UserProvider()),
       ],
       child: MaterialApp(
-        title: 'Game Terminal',
+        title: 'Playbees',
         theme: ThemeData(
           colorScheme: ColorScheme.fromSeed( seedColor: Color( 0xFF053149 )),
           useMaterial3: true,
@@ -42,14 +42,6 @@ class MyApp extends StatelessWidget {
             iconTheme: IconThemeData(
               color: Colors.white
             ),
-            toolbarTextStyle: TextTheme(
-              headline6: TextStyle(color: Colors.white),
-            ).bodyText2,
-            titleTextStyle: TextTheme(
-              headlineMedium: TextStyle(color: Colors.white),
-              headlineSmall: TextStyle(color: Colors.white),
-              headlineLarge: TextStyle(color: Colors.white),
-            ).headline6 ,
           ),
         ),
         debugShowCheckedModeBanner : false,

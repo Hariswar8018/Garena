@@ -21,6 +21,10 @@ class UserModel {
     required this.code,
     required this.age,
     required this.lastloginn,
+    required this.bonus,
+    required this.deposit,
+    required this.utilize,
+    required this.win,
   });
 
   late final String Chess_Level;
@@ -42,28 +46,35 @@ class UserModel {
   late final String code;
   late final String age;
   late final String lastloginn;
+  late final double bonus;
+  late final double deposit;
+  late final double utilize;
+  late final double win;
 
   UserModel.fromJson(Map<String, dynamic> json) {
-    Chess_Level = json['Chess_Level'] ?? 'Begineer';
+    Chess_Level = json['Chess_Level'] ?? 'Beginner';
     Email = json['Email'] ?? 'demo@demo.com';
     Name = json['Name'] ?? 'samai';
-    Pic_link = json['Pic_link'] ??
-        'https://i.pinimg.com/736x/98/fc/63/98fc635fae7bb3e63219dd270f88e39d.jpg';
+    Pic_link = json['Pic_link'] ?? 'https://i.pinimg.com/736x/98/fc/63/98fc635fae7bb3e63219dd270f88e39d.jpg';
     Bio = json['Bio'] ?? 'Demo';
-    Draw = json['Draw'] ?? 0 ;
+    Draw = _parseInt(json['Draw'], 0);
     Gender = json['Gender'] ?? "Male";
     Language = json['Language'] ?? "English";
     Location = json['Location'] ?? "Spain";
-    Lose = json['Lose'] ?? 0 ;
+    Lose = _parseInt(json['Lose'], 0);
     Talk = json['Talk'] ?? "Little Talkative";
-    Won = json['Won'] ?? 0 ;
-    uid = json['uid'] ?? "Hello" ;
-    Lat = json['Lat'] ?? 22.2661556 ;
-    Lon = json['Lon'] ?? 84.9088836 ;
+    Won = _parseDouble(json['Won'], 0.0);
+    uid = json['uid'] ?? "Hello";
+    Lat = _parseDouble(json['Lat'], 22.2661556);
+    Lon = _parseDouble(json['Lon'], 84.9088836);
     lastlogin = json['lastlogin'] ?? "73838";
-    code = json["Code"] ?? "0124" ;
+    code = json["Code"] ?? "0124";
     age = json["Age"] ?? "20";
     lastloginn = json['lastloginn'] ?? "7986345";
+    bonus = _parseDouble(json['bonus'], 0.0);
+    deposit = _parseDouble(json['deposit'], 0.0);
+    utilize = _parseDouble(json['utilize'], 0.0);
+    win = _parseDouble(json['win'], 0.0);
   }
 
   Map<String, dynamic> toJson() {
@@ -72,47 +83,47 @@ class UserModel {
     data['Email'] = Email;
     data['Name'] = Name;
     data['Pic_link'] = Pic_link;
-    data['Bio'] =  Bio;
-    data['Age'] =  age;
-    data['Gender'] =  Gender;
-    data['uid'] =  uid;
-    data['Draw'] = Draw ;
-    data['Lose'] = Lose ;
-    data['Won'] = Won ;
+    data['Bio'] = Bio;
+    data['Age'] = age;
+    data['Gender'] = Gender;
+    data['uid'] = uid;
+    data['Draw'] = Draw;
+    data['Lose'] = Lose;
+    data['Won'] = Won;
     data['Language'] = Language;
     data['Location'] = Location;
     data['Code'] = code;
-    data['Talk'] = Talk ;
-    data['Lat'] =  Lat;
-    data['Lon'] = Lon ;
-    data['lastlogin'] = lastlogin ;
-    data['lastloginn'] = lastloginn ;
+    data['Talk'] = Talk;
+    data['Lat'] = Lat;
+    data['Lon'] = Lon;
+    data['lastlogin'] = lastlogin;
+    data['lastloginn'] = lastloginn;
+    data['bonus'] = bonus;
+    data['deposit'] = deposit;
+    data['utilize'] = utilize;
+    data['win'] = win;
     return data;
   }
 
   static UserModel fromSnap(DocumentSnapshot snap) {
     var snapshot = snap.data() as Map<String, dynamic>;
-    return UserModel(
-      Email: snapshot['Email'] ?? 'Demo',
-      Name: snapshot['Name'] ?? 'Je',
-      Pic_link: snapshot['Pic_link'] ??
-          'https://cdn-icons-png.flaticon.com/512/552/552721.png',
-      Bio: snapshot['Bio'] ?? 'Je',
-      age : snapshot['Age'] ?? "20",
-      Gender: snapshot['Gender'] ?? "Female",
-      uid: snapshot['uid'] ?? "hi",
-      Chess_Level: snapshot['ff'] ?? "hi",
-      Draw: snapshot['Draw'] ?? 0,
-      Language: snapshot['Language'] ?? "not set",
-      Location: snapshot['Location'] ?? "not set",
-      Lose:  snapshot['Lose'] ?? 0,
-      code : snapshot['Code'] ?? "7666",
-      Talk: snapshot['Talk'] ?? "Introvert",
-      Won: snapshot['Won'] ?? 0,
-      Lat: snapshot['Lat'] ?? 22.2661556,
-      Lon: snapshot['Lon'] ?? 84.9088836,
-      lastlogin: snapshot['lastlogin'] ?? "14 October, 15:22",
-      lastloginn: snapshot['lastloginn'] ?? 3666732,
-    );
+    return UserModel.fromJson(snapshot);
+  }
+
+  int _parseInt(dynamic value, int defaultValue) {
+    if (value is int) return value;
+    if (value is String) {
+      return int.tryParse(value) ?? defaultValue;
+    }
+    return defaultValue;
+  }
+
+  double _parseDouble(dynamic value, double defaultValue) {
+    if (value is double) return value;
+    if (value is int) return value.toDouble();
+    if (value is String) {
+      return double.tryParse(value) ?? defaultValue;
+    }
+    return defaultValue;
   }
 }

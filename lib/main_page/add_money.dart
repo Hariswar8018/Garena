@@ -3,9 +3,10 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_custom_carousel_slider/flutter_custom_carousel_slider.dart';
+import 'package:garena/models/transaction.dart';
+import 'package:page_transition/page_transition.dart';
 import 'package:upi_payment_flutter/upi_payment_flutter.dart';
 import 'package:garena/page/pay.dart' ;
-import 'package:instamojo/instamojo.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:garena/login/login_screen.dart';
@@ -115,7 +116,10 @@ class _Add_MoneyState extends State<Add_Money> {
   final upiPaymentHandler = UpiPaymentHandler();
 
   String user = FirebaseAuth.instance.currentUser!.uid ;
-
+  String go(double i){
+    int jp=i.toInt();
+    return jp.toString();
+  }
   @override
   Widget build(BuildContext context) {
     UserModel? _user = Provider.of<UserProvider>(context).getUser;
@@ -139,7 +143,7 @@ class _Add_MoneyState extends State<Add_Money> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text( widget.bh ? "Add Money" : "Withdraw Money", style : TextStyle(color : Colors.black, fontSize : 17, fontWeight: FontWeight.w700)),
-                Text( "Balance : ₹" + _user!.Won.toString(), style : TextStyle(color : Colors.black, fontSize : 13, fontWeight: FontWeight.w500))
+                Text( "Balance : ₹" + go(_user!.Won), style : TextStyle(color : Colors.black, fontSize : 13, fontWeight: FontWeight.w500))
               ],
             ),
         ),
@@ -170,10 +174,129 @@ class _Add_MoneyState extends State<Add_Money> {
                 ),
               ),
             ),
-            SizedBox(height: 10),
+            SizedBox(height : 10),
+            Text("     Enter the Amount ? ", style: TextStyle(
+                color: Colors.black,
+                fontSize: 16,
+                fontWeight: FontWeight.w700)),
+            Padding(
+              padding: const EdgeInsets.all(10.0),
+              child: TextFormField(
+                controller: c,
+                keyboardType: TextInputType.number,
+                decoration: InputDecoration(
+                  labelText: '  Enter Amount',
+                  isDense: true,
+                  prefixText: "₹ ",
+                  suffixIcon: InkWell(
+                      onTap: () async {
+                        if(widget.bh){
+                          Navigator.push(
+                              context, PageTransition(
+                              child: Pay(amount: double.parse(c.text), str: "Playbees Order"), type: PageTransitionType.rightToLeft, duration: Duration(milliseconds: 200)
+                          ));
+                        }else{
+                          await showDialog(
+                            context: context,
+                            builder: (context) => new AlertDialog(
+                              title: new Text('Amount will be Debited'),
+                              content: Text('You sure to Withdraw Money? Amount will be Reflected in your Account within 3-5 Days'),
+                              actions: <Widget>[
+                                ElevatedButton(
+                                  onPressed: () async {
+                                    if(int.parse(c.text)<100){
+                                      Navigator.pop(context);
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        SnackBar(
+                                          content: Text("Minimum amount should be 100"),
+                                        ),
+                                      );
+                                    }else if(_user.Won<int.parse(c.text)){
+                                      print(int.parse(c.text));
+                                      print(_user.Won);
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        SnackBar(
+                                          content: Text('You have Less Amount than your Desiring Withdrawl'),
+                                        ),
+                                      );
+                                      Navigator.pop(context);
+                                    }else{
+                                      print(int.parse(c.text));
+                                      print(_user.Won);
+                                      String g = DateTime
+                                          .now()
+                                          .millisecondsSinceEpoch
+                                          .toString();
+                                      TransactionModel h = TransactionModel(
+                                          answer: false,
+                                          name: _user!.Name,
+                                          method: "UPI",
+                                          rupees: double.parse(c.text),
+                                          status: "Waiting",
+                                          coins:int.parse(c.text),
+                                          time: g,
+                                          time2: g,
+                                          nameUid: _user.uid,
+                                          id: g,
+                                          pic: _user.Pic_link,
+                                          pay: true, transactionId:""
+                                      );
+                                      await FirebaseFirestore.instance
+                                          .collection("Transaction").doc(g).set(h.toJson());
+                                      double df=double.parse(c.text);
+                                      await FirebaseFirestore.instance.collection("users").doc(_user.uid).update({
+                                        "Won":FieldValue.increment(- df),
+                                      });
+                                      Navigator.pop(context);
+                                      Navigator.pop(context);
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        SnackBar(
+                                          content: Text('Success ! It will be Withdrawl within 2-3 days'),
+                                        ),
+                                      );
+
+                                      UserProvider _userprovider = Provider.of(context, listen: false);
+                                      await _userprovider.refreshuser();
+                                    }
+                                  },
+                                  child: new Text('YES'),
+                                ),
+                                ElevatedButton(
+                                  onPressed: () {
+                                    Navigator.pop(context);
+                                  },
+                                  child: new Text('NO'),
+                                ),
+                              ],
+                            ),
+                          );
+                        }
+
+                      },
+                      child: Icon(Icons.arrow_forward_outlined, size : 30)),
+                  suffixIconColor: Colors.blueAccent,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(14.0), // Adjust the value as needed
+                  ),
+                ),
+                validator: (value) {
+                  if (value!.isEmpty) {
+                    return 'Please enter your name';
+                  }
+                  return null;
+                },
+                onFieldSubmitted: (value) async {
+                  Navigator.push(
+                      context, PageTransition(
+                      child: Pay(amount: double.parse(c.text), str: "Playbees Order"), type: PageTransitionType.rightToLeft, duration: Duration(milliseconds: 200)
+                  ));
+                },
+              ),
+            ),
+
             Padding(
               padding: const EdgeInsets.all(15.0),
-              child: Text("   Select Amount",
+              child: Text("   Or Select Predefined Amount",
                   style: TextStyle(
                       color: Colors.black,
                       fontSize: 19,
@@ -196,85 +319,7 @@ class _Add_MoneyState extends State<Add_Money> {
               ],
             ),
             SizedBox(height : 16),
-            Text("     Enter A Different Amount ? ", style: TextStyle(
-                color: Colors.black,
-                fontSize: 16,
-                fontWeight: FontWeight.w700)),
-            Padding(
-              padding: const EdgeInsets.all(10.0),
-              child: TextFormField(
-                  controller: c,
-                keyboardType: TextInputType.number,
-                  decoration: InputDecoration(
-                    labelText: '  Enter Amount',
-                    isDense: true,
-                    prefixText: "₹ ",
-                    suffixIcon: Icon(Icons.arrow_forward_outlined, size : 30),
-                    suffixIconColor: Colors.blueAccent,
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(14.0), // Adjust the value as needed
-                    ),
-                  ),
-                  validator: (value) {
-                    if (value!.isEmpty) {
-                      return 'Please enter your name';
-                    }
-                    return null;
-                  },
-                onFieldSubmitted: (value) async {
-                  try {
-                    String s = DateTime.now().microsecondsSinceEpoch.toString();
-                    double g = double.parse(c.text);
-                    bool success = await upiPaymentHandler.initiateTransaction(
-                      payeeVpa: '8093426959@kotak',
-                      payeeName: 'Ayushman Samasi',
-                      transactionRefId: 'ING$s',
-                      transactionNote: 'Add value Money to Wallet ',
-                      amount: g,
-                    );
-                    if (success) {
-                      Payments ii = Payments(id: 'TestGarena$s', time: s,
-                          status: "Confirmed", amount: g.toString());
-                      await FirebaseFirestore.instance.collection('users').doc(user).collection("Transaction").doc(s).set(ii.toJson());
-                      await FirebaseFirestore.instance.collection('users').doc(user).update({
-                        "Won" : FieldValue.increment(g),
-                      });
-                    } else {
-                      Navigator.pop(context);
-                    }
-                  } on PlatformException catch (e) {
-                    // Handle errors when UPI is not supported on the user's device
-                  }
-                },
-                onChanged: (value) async {
-                  try {
-                    String s = DateTime.now().microsecondsSinceEpoch.toString();
-                    double g = double.parse(c.text);
-                    bool success = await upiPaymentHandler.initiateTransaction(
-                      payeeVpa: '8093426959@kotak',
-                      payeeName: 'Ayusman Samasi',
-                      transactionRefId: 'ING',
-                      transactionNote: 'Add value Money to Wallet ',
-                      amount: g,
-                    );
 
-                    if (success) {
-                      Payments ii = Payments(id: 'TestGarena$s', time: s,
-                          status: "Confirmed", amount: g.toString());
-                      await FirebaseFirestore.instance.collection('users').doc(user).collection("Transaction").doc(s).set(ii.toJson());
-                      await FirebaseFirestore.instance.collection('users').doc(user).update({
-                        "Won" : FieldValue.increment(g),
-                      });
-                    } else {
-                      Navigator.pop(context);
-                    }
-                  } on PlatformException catch (e) {
-                    // Handle errors when UPI is not supported on the user's device
-                  }
-                },
-              ),
-            ),
-            SizedBox(height : 10),
             Center(child: Image.network("https://www.shutterstock.com/image-vector/kerala-india-may-08-2023-260nw-2304421791.jpg", width : 250)),
           ],
         ),
@@ -307,10 +352,8 @@ class _Add_MoneyState extends State<Add_Money> {
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Center(child: Text( "₹ " + str , style : TextStyle( fontWeight: FontWeight.w800, fontSize: 29))),
-            Text("GET EXTRA", style : TextStyle(color : Colors.orange, fontWeight : FontWeight.w900)),
-            Text(" 💰 " + calculatePercentage(s) + " Coins", style : TextStyle(color : Colors.orange, fontWeight : FontWeight.w800))
-          ],
+            Center(child: Text( "₹ " + str , style : TextStyle( fontWeight: FontWeight.w800, fontSize: 30))),
+            ],
         ),
       )),
     );

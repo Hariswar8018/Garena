@@ -1,4 +1,4 @@
-
+import 'dart:io';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:garena/main_page/home.dart';
@@ -42,7 +42,7 @@ class _NavigationState extends State<Navigation>{
     return WillPopScope(
         onWillPop: () async {
           // Show the alert dialog and wait for a result
-          bool exit = await showDialog(
+          bool exitt = await showDialog(
             context: context,
             builder: (BuildContext context) {
               return AlertDialog(
@@ -59,6 +59,7 @@ class _NavigationState extends State<Navigation>{
                   ElevatedButton(
                     child: Text('Yes'),
                     onPressed: () {
+                      exit(0);
                       // Return true to allow the app to exit
                       Navigator.of(context).pop(true);
                     },
@@ -69,7 +70,7 @@ class _NavigationState extends State<Navigation>{
           );
 
           // Return the result to handle the back button press
-          return exit ?? false;
+          return exitt ?? false;
         },
         child: Container(
           width: MediaQuery.of(context).size.width,

@@ -7,6 +7,9 @@ import 'package:garena/main_page/wallet.dart';
 import 'package:garena/models/providers.dart';
 import 'package:garena/models/user_model.dart';
 import 'package:garena/other/result.dart';
+import 'package:garena/other/result2.dart';
+import 'package:garena/page/register.dart';
+import 'package:intl/intl.dart';
 import 'package:omni_datetime_picker/omni_datetime_picker.dart';
 import 'package:appinio_animated_toggle_tab/appinio_animated_toggle_tab.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -37,6 +40,15 @@ class _GamyyState extends State<Gamyy> {
   );
 
   List<GameModel> list = [];
+  String as(){
+    if(currentIndex==0){
+      return "Upcoming";
+    }else if(currentIndex==1){
+      return "Ongoing";
+    }else{
+      return "Completed";
+    }
+  }
 
   late Map<String, dynamic> userMap;
   int currentIndex = 0;
@@ -74,7 +86,7 @@ class _GamyyState extends State<Gamyy> {
                 first: "", hostedby: "", hosteid: "",
                 hostname:"", Level: "", mode: "",
                 second: "", Server: "", Team: "",
-                time_e: "", time_s: "");
+                time_e: "", time_s: "", id: '', Rank: '');
             Navigator.push(
               context,
               MaterialPageRoute(
@@ -150,7 +162,7 @@ class _GamyyState extends State<Gamyy> {
                   width: MediaQuery.of(context).size.width,
                   child: StreamBuilder(
                       stream: FirebaseFirestore.instance
-                          .collection("League")
+                          .collection("League").where("status",isEqualTo: as())
                           .snapshots(),
                       builder: (context, snapshot) {
                         switch (snapshot.connectionState) {
@@ -203,12 +215,69 @@ class ChatUser extends StatefulWidget {
 
 class _ChatUserState extends State<ChatUser> {
   void initState() {
-    g();
     super.initState();
+    g();
   }
 
   Future<void> g() async {
+    print(widget.user.status);
 
+    String dateStringStart = widget.user.date_f;
+    String timeStringStart = widget.user.time_s;
+    String dateStringEnd = widget.user.date_e;
+    String timeStringEnd = widget.user.time_e;
+
+    // Define the date and time formats
+    DateFormat dateFormat = DateFormat('dd/MM/yyyy');
+    DateFormat timeFormat = DateFormat('HH:mm');
+
+    // Parse the date and time strings separately
+    DateTime dateStart = dateFormat.parse(dateStringStart);
+    DateTime timeStart = timeFormat.parse(timeStringStart);
+    DateTime dateEnd = dateFormat.parse(dateStringEnd);
+    DateTime timeEnd = timeFormat.parse(timeStringEnd);
+
+    // Combine date and time into a single DateTime object
+    DateTime targetDateTimeStart = DateTime(
+      dateStart.year,
+      dateStart.month,
+      dateStart.day,
+      timeStart.hour,
+      timeStart.minute,
+    );
+
+    DateTime targetDateTimeEnd = DateTime(
+      dateEnd.year,
+      dateEnd.month,
+      dateEnd.day,
+      timeEnd.hour,
+      timeEnd.minute,
+    );
+
+    print(targetDateTimeStart);
+    print(targetDateTimeEnd);
+
+    DateTime now = DateTime.now();
+    print(now);
+
+    CollectionReference collection = FirebaseFirestore
+        .instance
+        .collection("League");
+
+    // Compare the DateTime objects and update the status
+    if (now.isBefore(targetDateTimeStart)) {
+      await collection.doc(widget.user.id).update({
+        "status": "Upcoming",
+      });
+    } else if (now.isAfter(targetDateTimeStart) && now.isBefore(targetDateTimeEnd)) {
+      await collection.doc(widget.user.id).update({
+        "status": "Ongoing",
+      });
+    } else if (now.isAfter(targetDateTimeEnd)) {
+      await collection.doc(widget.user.id).update({
+        "status": "Completed",
+      });
+    }
   }
 
   TextEditingController cs = TextEditingController();
@@ -220,11 +289,26 @@ class _ChatUserState extends State<ChatUser> {
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: InkWell(
-        onTap: () {
+          onDoubleTap: () {
+            if (_user!.Chess_Level == "Admin") {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) =>
+                      Add(id: "",
+                        uid: "",
+                        changing: true,
+                        isleague: true,
+                        user: widget.user,),
+                ),
+              );
+            }
+          },
+            onTap: () {
           Navigator.push(
             context,
             MaterialPageRoute(
-                builder: (context) => Single_C(user: widget.user)),
+                builder: (context) => Single_C(user: widget.user, gname: '', glevel: '', i:1,)),
           );
         },
         child: Container(
@@ -300,13 +384,13 @@ class _ChatUserState extends State<ChatUser> {
                     child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
-                          asf("ENTRY", widget.user.Fee.toString(), true, false, false),
+                          asf("ENTRY", "₹ "+widget.user.Fee.toString(), true, false, false),
                           r1(),
-                          asf("#1", widget.user.first, true, true, false),
+                          asf("#1","₹ "+ widget.user.first, true, true, false),
                           r1(),
-                          asf("PER KILL", widget.user.Kill, true, false, true),
+                          asf("PER KILL","₹ "+ widget.user.Kill, true, false, true),
                           r1(),
-                          asf("RATING", "ANY", false, false, false),
+                          asf("RANK", widget.user.Rank, false, false, false),
                         ]),
                   ),
                 ),
@@ -333,7 +417,7 @@ class _ChatUserState extends State<ChatUser> {
                     width: MediaQuery.of(context).size.width,
                     height : 12),
                 SizedBox(height: 9),
-                widget.i == 0 ? Container(
+                widget.user.status == "Upcoming" ? Container(
                   width: MediaQuery.of(context).size.width,
                   child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -349,173 +433,27 @@ class _ChatUserState extends State<ChatUser> {
                             Text( widget.user.Participants.length.toString() + " / " + widget.user.limit.toString(), style : TextStyle(color : Colors.black, fontSize : 18)),
                           ],
                         ),
-                        ElevatedButton(
-                          onPressed: () async {
-                            showDialog(
-                              context: context,
-                              builder: (BuildContext context) {
-                                // Create the AlertDialog
-                                return AlertDialog(
-                                  backgroundColor: Colors.transparent,
-                                  elevation: 0,
-                                  content: Container(
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(10),
-                                      image: DecorationImage(
-                                          fit: BoxFit.cover,
-                                          image: AssetImage(
-                                              "assets/Screenshot_2024-01-20-14-04-58-25_8ee8015dd2b473d44c46c2d8d6942cec.jpg")),
-                                    ),
-                                    height: 370,
-                                    width : MediaQuery.of(context).size.width,
-                                    child: Center(
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(8.0),
-                                        child: Column(
-                                          mainAxisAlignment:
-                                          MainAxisAlignment.start,
-                                          crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                          children: <Widget>[
-                                            Row(
-                                              mainAxisAlignment: MainAxisAlignment.start,
-                                              crossAxisAlignment: CrossAxisAlignment.center,
-                                              children: [
-                                                IconButton(
-                                                    onPressed: () {
-                                                      Navigator.pop(context);
-                                                    },
-                                                    icon: Icon(Icons.backspace, color : Colors.black)),
-                                                Text("PLAYBEES.IO",
-                                                    style: TextStyle(
-                                                        fontWeight:
-                                                        FontWeight.w900,
-                                                        color: Colors.black)),
-                                              ],
-                                            ),
-                                            SizedBox(height: 10),
-                                            Padding(
-                                              padding: const EdgeInsets.only(
-                                                  left: 10.0, right: 10),
-                                              child: TextFormField(
-                                                controller: cs,
-                                                decoration: InputDecoration(
-                                                  label: Text("BGMI Username"),
-                                                ),
-                                              ),
-                                            ),
-                                            Padding(
-                                              padding: const EdgeInsets.only(
-                                                  left: 10.0, right: 10),
-                                              child: TextFormField(
-                                                controller: cd,
-                                                decoration: InputDecoration(
-                                                  label: Text("BGMI ID"),
-                                                ),
-                                              ),
-                                            ),
-                                            SizedBox(height: 20),
-                                            Text("Note : ROOM ID and Password will be displayed in Leagues or Registered Matches before 15 min of each time", textAlign : TextAlign.center,),
-                                            SizedBox(height: 24),
-                                            Padding(
-                                              padding: const EdgeInsets.all(8.0),
-                                              child: Container(
-                                                width: MediaQuery.of(context)
-                                                    .size
-                                                    .width,
-                                                height: 40,
-                                                child: Expanded(
-                                                  child: ElevatedButton(
-                                                    onPressed: () async {
-                                                      if (_user!.Won >=
-                                                          widget.user.Fee) {
-                                                        String userjj = FirebaseAuth
-                                                            .instance
-                                                            .currentUser!
-                                                            .uid;
-                                                        await FirebaseFirestore
-                                                            .instance
-                                                            .collection('users')
-                                                            .doc(userjj)
-                                                            .update({
-                                                          "Won":
-                                                          FieldValue.increment(
-                                                              - widget.user.Fee),
-                                                        });
-                                                        CollectionReference
-                                                        collection =
-                                                        FirebaseFirestore
-                                                            .instance
-                                                            .collection(
-                                                            "League");
-                                                        await collection
-                                                            .doc(widget.user.Name)
-                                                            .update({
-                                                          "Participants":
-                                                          FieldValue.arrayUnion(
-                                                              [_user!.Name]),
-                                                        });
-                                                        ScaffoldMessenger.of(
-                                                            context)
-                                                            .showSnackBar(
-                                                          SnackBar(
-                                                            content: Text(
-                                                                'You joined this Event Successfully'),
-                                                          ),
-                                                        );
-                                                        Navigator.pop(context);
-                                                        String s = DateTime.now().microsecondsSinceEpoch.toString();
-                                                        String s1 = DateTime.now().toString();
-                                                        Payments g = Payments(id: s, time: s1,
-                                                            status: "Debited", amount: widget.user.Fee.toString() );
-                                                        FirebaseFirestore.instance
-                                                            .collection('users')
-                                                            .doc(user)
-                                                            .collection("Transaction").doc(s).set(g.toJson());
-                                                      } else {
-                                                        ScaffoldMessenger.of(
-                                                            context)
-                                                            .showSnackBar(
-                                                          SnackBar(
-                                                            content: Text(
-                                                                'You don\'t have much coin'),
-                                                          ),
-                                                        );
-                                                        Navigator.push(
-                                                          context,
-                                                          MaterialPageRoute(
-                                                              builder: (context) =>
-                                                                  No_M()),
-                                                        );
-                                                      }
-                                                    },
-                                                    child: Text("REGISTER",
-                                                        style: TextStyle(
-                                                            color: Colors.black, )),
-                                                    style: ElevatedButton.styleFrom(
-                                                        backgroundColor:
-                                                        Colors.purple.shade100),
-                                                  ),
-                                                ),
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                );
-                              },
+                        ElevatedButton( onPressed :() async {
+                          if(widget.user.Participants.contains('${_user!.uid}')){
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (context) => Mumm(user : widget.user, gname: "", i: widget.i, glevel: "",)),
                             );
-                          },
-                          child: Text("JOIN",
-                              style: TextStyle(color: Colors.black)),
+                          }else{
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (context) => Register(user : widget.user, gname: "", i: widget.i, glevel: "",)),
+                            );
+                          }
+
+                        }, child : Text( widget.user.Participants.contains('${_user!.uid}') ? "View " : "JOIN", style : TextStyle(color : Colors.black)),
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Color(0xffB39BE5),
-                          ),
-                        )
-                      ]),
-                ): Container(
+                              backgroundColor: Color(0xffB39BE5)
+                          ),)
+                      ]
+                  ),
+                ) :
+                Container(
                   width: MediaQuery.of(context).size.width,
                   child: Padding(
                     padding: const EdgeInsets.only( left : 18.0, right : 18),
@@ -523,9 +461,9 @@ class _ChatUserState extends State<ChatUser> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           TextButton.icon(onPressed: () async {
-                         final Uri _url = Uri.parse('https://youtu.be/2n4nTYwAQN0?si=OsqJ2YRyBiNju3E4');
-                         if (!await launchUrl(_url)) {
-                            throw Exception('Could not launch $_url');
+                            final Uri _url = Uri.parse('https://youtu.be/2n4nTYwAQN0?si=OsqJ2YRyBiNju3E4');
+                            if (!await launchUrl(_url)) {
+                              throw Exception('Could not launch $_url');
                             }
                           }, icon: Icon(Icons.ondemand_video_rounded, color : Colors.red), label: Text("  WATCH  "),
                             style: ElevatedButton.styleFrom(
@@ -535,14 +473,13 @@ class _ChatUserState extends State<ChatUser> {
                             onPressed: () async {
                               Navigator.push(
                                 context,
-                                MaterialPageRoute(
-                                    builder: (context) => Mumm()),
+                                MaterialPageRoute(builder: (context) => Result(user : widget.user, gname: "", i: widget.i, glevel: "",)),
                               );
                             },
-                            child: Text("VIEW",
+                            child: Text("VIEW Result",
                                 style: TextStyle(color: Colors.black)),
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.purple.shade100
+                                backgroundColor: Color(0xffB39BE5)
                             ),
                           ),
                         ]),
@@ -607,7 +544,6 @@ class _ChatUserState extends State<ChatUser> {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                if (b) Icon(Icons.diamond, color: Colors.blue),
                 Text(n1,
                     style: TextStyle(
                         color: Colors.black,

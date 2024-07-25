@@ -12,25 +12,27 @@ class GameModel {
     required this.Notes,
     required this.Participants,
     required this.Picture,
-    required this.Type ,
+    required this.Type,
     required this.Version,
     required this.limit,
     required this.date_e,
     required this.date_f,
-  required this.first,
-  required this.hostedby,
-  required this.hosteid,
-  required this.hostname,
-  required this.Level,
-  required this.mode,
-  required this.second,
-  required this.Server,
-  required this.Team,
-  required this.time_e,
-  required this.time_s,
+    required this.first,
+    required this.hostedby,
+    required this.hosteid,
+    required this.hostname,
+    required this.Level,
+    required this.mode,
+    required this.second,
+    required this.Server,
+    required this.Team,
+    required this.time_e,
+    required this.time_s,
     required this.link,
-  required this.ytlink,
-  required this.status,
+    required this.ytlink,
+    required this.status,
+    required this.id,
+    required this.Rank,
   });
 
   late final String Name;
@@ -46,15 +48,17 @@ class GameModel {
   late final String date_e;
   late final String time_s;
   late final String time_e;
-  late final String status ;
-  late final String link ;
-  late final String ytlink ;
+  late final String status;
+  late final String link;
+  late final String ytlink;
   late final String mode;
-  late final String hostedby ;
+  late final String hostedby;
   late final String hosteid;
   late final String hostname;
+  late final String id;
+  late final String Rank;
 
-   late final int Fee;
+  late final int Fee;
   late final String About;
   late final String Important;
   late final List Participants;
@@ -65,16 +69,16 @@ class GameModel {
 
   GameModel.fromJson(Map<String, dynamic> json) {
     link = json['link'] ?? "https://yjj.be";
-    ytlink = json['link'] ?? "https://yt.be";
+    ytlink = json['ytlink'] ?? "https://yt.be";
     status = json['status'] ?? "P";
     Name = json['Name'] ?? 'Garena View';
     Type = json['Type'] ?? "PT";
     Version = json['Version'] ?? "2.0";
-    Mapp = json['Map'] ?? "Erangel";
+    Mapp = json['Mapp'] ?? "Erangel";
     Fee = (json['Fee'] ?? 10.0).toInt(); // Convert double to int
     About = json['About'] ?? "No about for view";
     Important = json['Important'] ?? "hh";
-    Participants = json['Participants'] ?? [];
+    Participants = List<dynamic>.from(json['Participants'] ?? []);
     Kill = json['Kill'] ?? "30";
     Notes = json['Notes'] ?? "";
     Picture = json['Picture'] ?? "h";
@@ -92,6 +96,8 @@ class GameModel {
     Team = json['Team'] ?? "Single";
     time_s = json['time_s'] ?? "13:20";
     time_e = json['time_e'] ?? "14:20";
+    id = json['id'] ?? "";
+    Rank = json['Rank'] ?? "";
   }
 
   Map<String, dynamic> toJson() {
@@ -99,7 +105,7 @@ class GameModel {
     data['Name'] = Name;
     data['Type'] = Type;
     data['Version'] = Version;
-    data['Map'] = Mapp;
+    data['Mapp'] = Mapp;
     data['Fee'] = Fee;
     data['About'] = About;
     data['Important'] = Important;
@@ -122,9 +128,10 @@ class GameModel {
     data['time_s'] = time_s;
     data['time_e'] = time_e;
     data['link'] = link;
-    data['ytlink'] = ytlink ;
-    data['status'] = status ;
+    data['ytlink'] = ytlink;
+    data['status'] = status;
+    data['id'] = id;
+    data['Rank'] = Rank;
     return data;
   }
-
 }

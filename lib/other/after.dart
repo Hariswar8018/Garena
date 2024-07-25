@@ -29,7 +29,7 @@ class _UpdateState extends State<Update> {
     return Scaffold(
         appBar: AppBar(
           automaticallyImplyLeading: true,
-          title: Text("Update your " + widget.Name),
+          title: Text("Update your " + widget.Name,style:TextStyle(color:Colors.white)),
           elevation: 0,
         ),
         body: Column(
@@ -42,7 +42,6 @@ class _UpdateState extends State<Update> {
               Padding(
                 padding: const EdgeInsets.only(left: 18.0, right: 18),
                 child: TextFormField(
-                  obscureText: true,
                   decoration: InputDecoration(
                     labelText: 'Your New ${widget.Name}',
                     isDense: true,

@@ -10,6 +10,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:garena/main.dart';
 import 'package:garena/models/providers.dart';
 import 'package:garena/models/user_model.dart';
+import 'package:garena/page/add_notify.dart';
 import 'package:provider/provider.dart';
 
 class Home extends StatefulWidget {
@@ -147,7 +148,8 @@ bool tb = false ;
       )
     );
   }
-
+bool mobile = true ;
+  String tofind = "Mobile";
   @override
   Widget build(BuildContext context) {
     UserModel? _user = Provider.of<UserProvider>(context).getUser;
@@ -164,7 +166,7 @@ bool tb = false ;
           backgroundColor: Colors.transparent,
           appBar: AppBar(
             backgroundColor: Colors.transparent,
-            leading: Image.asset("assets/Untitled_design-removebg-preview.png"),
+            leading: Image.asset("assets/logo-Photoroom.png"),
             title: Column(
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -174,7 +176,7 @@ bool tb = false ;
                         color: Colors.black,
                         fontSize: 13,
                         fontWeight: FontWeight.w500)),
-                Text("Game Terminal",
+                Text("Playbees",
                     style: TextStyle(
                         color: Colors.black,
                         fontSize: 19,
@@ -194,19 +196,29 @@ bool tb = false ;
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(15),
                     ),
-                    child: Row(children: [
-                      SizedBox(width: 5),
-                      Icon(Icons.diamond, color: Colors.orangeAccent, size: 15),
-                      SizedBox(width: 3),
-                      Text(hh(_user!.Won),
-                          style: TextStyle(
-                              color: Colors.black,
-                              fontSize: 15,
-                              fontWeight: FontWeight.w900)),
-                      SizedBox(width: 8),
-                    ])),
+                    child: Padding(
+                      padding: const EdgeInsets.all(4.0),
+                      child: Row(children: [
+                        SizedBox(width: 9),
+                        Text("₹",
+                            style:
+                            TextStyle(fontWeight: FontWeight.w900, fontSize: 22,color:Colors.orange)),
+                        SizedBox(width: 3),
+                        Text(hh(_user!.Won),
+                            style: TextStyle(
+                                color: Colors.black,
+                                fontSize: 19,
+                                fontWeight: FontWeight.w900)),
+                        SizedBox(width: 10),
+                      ]),
+                    )),
               ),
-              IconButton(onPressed: (){}, icon: Icon(Icons.notifications_rounded, color : Colors.red)),
+              IconButton(onPressed: (){
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => Not(viewonly:true, id: '', str: '', b: true,)),
+                );
+              }, icon: Icon(Icons.notifications_rounded, color : Colors.red,size: 30,)),
               SizedBox(width: 8),
             ],
           ),
@@ -219,18 +231,18 @@ bool tb = false ;
                   child: Center(
                     child: ClipRRect(
                       borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(30.0), // Adjust the radius value as needed
-                        topRight: Radius.circular(30.0), // Adjust the radius value as needed
-                        bottomLeft: Radius.circular(30.0),
-                        bottomRight: Radius.circular(30.0),
+                        topLeft: Radius.circular(10.0), // Adjust the radius value as needed
+                        topRight: Radius.circular(10.0), // Adjust the radius value as needed
+                        bottomLeft: Radius.circular(20.0),
+                        bottomRight: Radius.circular(20.0),
                       ),
                       child: CustomCarouselSlider(
                         items: itemList,
                         height: 190,
                         subHeight: 50,
                         width: MediaQuery.of(context).size.width - 10,
-                        autoplay: true,
-                        indicatorShape: BoxShape.circle,
+                        autoplay: true,indicatorPosition: IndicatorPosition.bottom,boxPaddingVertical: 4,
+                        indicatorShape: BoxShape.circle,dotSpacing: 9,
                         showSubBackground: false,
                         autoplayDuration: Duration(seconds: 5),
                         showText: false,
@@ -247,6 +259,8 @@ bool tb = false ;
                           asyyy();
                           setState((){
                             mo = true ;
+                            mobile = true;
+                            tofind="Mobile";
                           });
                         },
                         child: asyy( context, mo , "MOBILE", Icon(Icons.mobile_friendly_sharp, size : 16, color : mo ? Colors.yellow : Colors.black))),
@@ -255,6 +269,8 @@ bool tb = false ;
                           asyyy();
                           setState((){
                             tb = true ;
+                            mobile = false;
+                            tofind="PC";
                           });
                         },
                         child: asyy( context, tb , "COMPUTER", Icon(Icons.computer, size : 16, color : tb ? Colors.yellow : Colors.black))),
@@ -262,27 +278,34 @@ bool tb = false ;
                       asyyy();
                       setState((){
                         pc = true ;
+                        mobile = false;
+                        tofind="Emulator";
                       });
                     }, child: asyy( context, pc , "EMULATOR", Icon(Icons.calculate, size : 16, color : pc ? Colors.yellow : Colors.black))),
                   ],
                 ),
                 SizedBox(height: 10),
-                mk(context, "BGMI", "EASY", "BGMI"),
+                tofind=="PC"? mk(context, "Valorant", "EASY", "Valorant"):SizedBox(),
                 SizedBox(height: 5),
-                hjg(context, "BGMI"),
+                tofind =="PC"? hjg(context, "Valorant"):SizedBox(),
                 SizedBox(height: 20),
-                mk(context, "Free Fire", "EASY", "Free Fire"),
+                tofind!="PC"?mk(context, "BGMI", "EASY", "BGMI"):SizedBox(),
                 SizedBox(height: 5),
-                hjg(context, "Free Fire"),
+                tofind!="PC"?hjg(context, "BGMI"):SizedBox(),
                 SizedBox(height: 20),
-                mk(context, "Call of Duty", "EASY", "Free Fire"),
+                tofind!="PC"?mk(context, "New State", "EASY", "New State"):SizedBox(),
+                SizedBox(height: 5),
+                tofind!="PC"?hjg(context, "New State"):SizedBox(),
+                SizedBox(height: 20),
+                tofind!="PC"?mk(context, "Free Fire", "EASY", "Free Fire"):SizedBox(),
+                SizedBox(height: 5),
+                tofind!="PC"?hjg(context, "Free Fire"):SizedBox(),
+                SizedBox(height: 20),
+                tofind!="PC"?mk(context, "Call of Duty", "EASY", "Call of  Duty"):SizedBox(),
                 SizedBox(height: 1),
-                hjg(context, "Duty"),
+                tofind!="PC"?hjg(context, "Duty"):SizedBox(),
                 SizedBox(height: 20),
-                mk(context, "Valorant", "EASY", "Free Fire"),
-                SizedBox(height: 5),
-                hjg(context, "Valorant"),
-                SizedBox(height: 30),
+
               ],
             ),
           )),
@@ -309,7 +332,7 @@ bool tb = false ;
                       MaterialPageRoute(
                           builder: (context) => AllG(
                                 glevel: glevel,
-                                gname: gname,
+                                gname: gname, typei: tofind,
                               )),
                     );
                   },
@@ -332,7 +355,7 @@ bool tb = false ;
       height: 155,
       width: MediaQuery.of(context).size.width,
       child: StreamBuilder(
-          stream: FirebaseFirestore.instance.collection(g9).snapshots(),
+          stream: FirebaseFirestore.instance.collection(g9).where("modes",arrayContains: tofind).snapshots(),
           builder: (context, snapshot) {
             switch (snapshot.connectionState) {
               case ConnectionState.waiting:
@@ -346,7 +369,7 @@ bool tb = false ;
                         .toList() ??
                     [];
                 if (list.isEmpty) {
-                  return Center(child: Text("No Games to show"));
+                  return Center(child: Text("Games Coming Soon"));
                 } else {
                   return ListView.builder(
                     itemCount: list.length > 5 ? 5 : list.length,
@@ -450,7 +473,7 @@ class ChatUser extends StatelessWidget {
                     borderRadius: BorderRadius.circular(20),
                     color: Colors.white,
                     image: DecorationImage(
-                      image: NetworkImage(user.id),
+                      image: NetworkImage(user.pic),
                       fit: BoxFit.cover,
                     )),
               ),

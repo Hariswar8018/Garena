@@ -2,8 +2,10 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:garena/Cards/transactions.dart';
 import 'package:garena/login/login_screen.dart';
+import 'package:garena/main_page/history.dart';
 import 'package:garena/models/providers.dart';
 import 'package:garena/other/before.dart';
+import 'package:garena/page/admin.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
 import 'package:garena/models/user_model.dart';
@@ -67,7 +69,7 @@ class _ProfileState extends State<Profile> {
                 onTap: () {
                   Navigator.push(
                       context, PageTransition(
-                      child: Before_Update(), type: PageTransitionType.rightToLeft, duration: Duration(milliseconds: 500)
+                      child: Before_Update(user:_user), type: PageTransitionType.rightToLeft, duration: Duration(milliseconds: 100)
                   ));
                 },
                 subtitle: Text("See your Account, Edit or Delete It"),
@@ -90,23 +92,24 @@ class _ProfileState extends State<Profile> {
               ListTile(
                 leading: Icon(Icons.my_library_books_sharp, color: Colors.greenAccent, size: 30),
                 title: Text("Transactions"),
-                onTap: () {
+                onTap: (){
                   Navigator.push(
-                      context, PageTransition(
-                      child: Transaction(), type: PageTransitionType.rightToLeft, duration: Duration(milliseconds: 500)
-                  ));
+                      context,
+                      PageTransition(
+                          child: History(st:FirebaseAuth.instance.currentUser!.uid),
+                          type: PageTransitionType.leftToRight,
+                          duration: Duration(milliseconds: 100)));
+                },
+                onLongPress: () {
+                  String? emsil = FirebaseAuth.instance.currentUser!.email;
+                  if(emsil=="hariswarsamasi@gmail.com"||emsil=="kushankkm9535@gmail.com"||_user.Gender=="Transaction Admin"){
+                    Navigator.push(
+                        context, PageTransition(
+                        child: Admin(), type: PageTransitionType.rightToLeft, duration: Duration(milliseconds: 500)
+                    ));
+                  }
                 },
                 subtitle: Text("Check your Transactions"), trailing: Icon(Icons.arrow_forward_ios_sharp, color: Colors.greenAccent, size: 20,),
-                splashColor: Colors.orange.shade300,
-                tileColor: Colors.grey.shade50,
-              ),
-              ListTile(
-                leading: Icon(Icons.security,color: Colors.blueAccent, size: 30),
-                title: Text("Admin"),
-                onTap: () {
-
-                },
-                subtitle: Text("Check Admin Panel"), trailing: Icon(Icons.arrow_forward_ios_sharp, color: Colors.blueAccent, size: 20,),
                 splashColor: Colors.orange.shade300,
                 tileColor: Colors.grey.shade50,
               ),
@@ -124,19 +127,26 @@ class _ProfileState extends State<Profile> {
                 tileColor: Colors.grey.shade50,
               ),
               ListTile(
-                leading: Icon(Icons.sd_storage, color: Colors.orange, size: 30),
-                title: Text("Storage"),
+                leading: Icon(Icons.newspaper_outlined, color: Colors.orange, size: 30),
+                title: Text("Terms & Condition"),
                 onTap: () async {
-
+                  final Uri _url = Uri.parse('https://chessmons.com/privacy/');
+                  if (!await launchUrl(_url)) {
+                    throw Exception('Could not launch $_url');
+                  }
                 },
-                subtitle: Text("Clear your Cache"), trailing: Icon(Icons.arrow_forward_ios_sharp, color: Colors.orange, size: 20,),
+                subtitle: Text("Check Terms & Condition of Our App"), trailing: Icon(Icons.arrow_forward_ios_sharp, color: Colors.orange, size: 20,),
                 splashColor: Colors.orange.shade300,
                 tileColor: Colors.grey.shade50,
               ),
               ListTile(
                 leading: Icon(Icons.support, color: Colors.green, size: 30),
                 title: Text("Support"),
-                onTap: () {
+                onTap: () async {
+                  final Uri _url = Uri.parse('https://wa.me/919880281657');
+                  if (!await launchUrl(_url)) {
+                  throw Exception('Could not launch $_url');
+                  }
                  /* Navigator.push(
                       context, PageTransition(
                       child: Support(), type: PageTransitionType.rightToLeft, duration: Duration(milliseconds: 200)
@@ -163,10 +173,10 @@ class _ProfileState extends State<Profile> {
                 tileColor: Colors.grey.shade50,
               ),
               SizedBox(height: 20,),
-              Text("GAME TERMINAL", style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700, fontStyle: FontStyle.italic)),
+              Text("PLAYBEES", style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700, fontStyle: FontStyle.italic)),
               Text("Made with ❤️ with Online Games", style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500)),
-              Image.asset("assets/Untitled_design-removebg-preview.png", height: 80,),
-              Text("GAME TERMINAL version : 1.2", style: TextStyle(fontSize: 15, fontWeight: FontWeight.w200)),
+              Image.asset("assets/logo-Photoroom.png", height: 80,),
+              Text("PLAYBEES version : 1.2", style: TextStyle(fontSize: 15, fontWeight: FontWeight.w200)),
               SizedBox(height: 20,),
             ],
           ),

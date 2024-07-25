@@ -84,15 +84,10 @@ class _AddState extends State<Add> {
   final TextEditingController participantsController = TextEditingController();
 
   final TextEditingController prizeController = TextEditingController();
-
   final TextEditingController killController = TextEditingController();
-
   final TextEditingController notesController = TextEditingController();
-
   final TextEditingController pictureController = TextEditingController();
-
   final TextEditingController winnerController = TextEditingController();
-
   final TextEditingController runnerController = TextEditingController();
   final TextEditingController mode = TextEditingController();
   final TextEditingController first = TextEditingController();
@@ -102,6 +97,7 @@ class _AddState extends State<Add> {
   final TextEditingController level = TextEditingController();
   final TextEditingController ytlink = TextEditingController();
   final TextEditingController link = TextEditingController();
+  final TextEditingController rank = TextEditingController();
   String photoUrl = " ";
 
   String st = " ";
@@ -111,6 +107,7 @@ class _AddState extends State<Add> {
 
   void initState(){
     mappController.text = widget.uid ;
+    level.text="Solo";
     if(widget.changing){
       nameController.text = widget.user.Name ;
     aboutController.text = widget.user.About ;
@@ -121,6 +118,7 @@ class _AddState extends State<Add> {
     matchTypeController.text = widget.user.Type ;
     versionController.text = widget.user.Version ;
     endd.text = widget.user.date_e ;
+      rank.text = widget.user.Rank ;
     startd.text = widget.user.date_f ;
     first.text = widget.user.first ;
     level.text = widget.user.Level ;
@@ -150,60 +148,87 @@ class _AddState extends State<Add> {
         child: SingleChildScrollView(
           child: Column(
             children: [
-              SizedBox(
-                height: 20,
-              ),
-              Center(
-                child: CircleAvatar(
-                  radius: 60,
-                  backgroundColor: Colors.grey.shade200,
-                  child: IconButton(
-                      onPressed: () async {
-                        try {
-                          Uint8List? _file =
-                          await pickImage(ImageSource.gallery);
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text("Uploading Please wait"),
-                            ),
-                          );
-                          photoUrl = await StorageMethods()
-                              .uploadImageToStorage('users', _file!, true);
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text("Pic Uploaded"),
-                            ),
-                          );
-                        } catch (e) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text('${e}'),
-                            ),
-                          );
-                        }
-                      },
-                      icon: Icon(
-                        Icons.camera,
-                        size: 55,
-                      )),
+              Container(
+                width: MediaQuery.of(context).size.width,
+                height: 200,
+                decoration: BoxDecoration(
+                  image: DecorationImage(
+                    image: NetworkImage(
+                      photoUrl,
+                    ),fit: BoxFit.cover,
+                  )
+                ),
+                child:  Center(
+                  child: CircleAvatar(
+                    radius: 60,
+                    backgroundColor: Colors.grey.shade200,
+                    child: IconButton(
+                        onPressed: () async {
+                          try {
+                            Uint8List? _file =
+                            await pickImage(ImageSource.gallery);
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text("Uploading Please wait"),
+                              ),
+                            );
+                            photoUrl = await StorageMethods()
+                                .uploadImageToStorage('users', _file!, true);
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text("Pic Uploaded"),
+                              ),
+                            );
+                            setState(() {
+
+                            });
+                          } catch (e) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text('${e}'),
+                              ),
+                            );
+                          }
+                        },
+                        icon: Icon(
+                          Icons.camera,
+                          size: 55,
+                        )),
+                  ),
                 ),
               ),
               SizedBox(
-                height: 10,
+                height: 20,
               ),
               a(nameController, "Name"),
               a(versionController, "VIEW"),
-              a(mode, "Mode : 'PC/Tablet/Phone'"),
+              Text("Please Select the Devices ?"),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children:[
+                    rtt("Mobile"),
+                    rtt("PC"),
+                    rtt("Tablet"),
+                    rtt("Emulator"),
+                  ]
+              ),
               a(server, "Server"),
-              a(level, "Team" ),
-              ac(mappController, "Map"),
+              a(rank, "Rank"),
+              Text("Please Select Team Type"),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children:[
+                  rt("Solo"),
+                  rt("Duo"),
+                  rt("Squad"),
+                ],
+              ),
+              widget.isleague?a(mappController, "Map"):ac(mappController, "Map"),
               SizedBox(height : 13),
               Center(
                 child: Icon(Icons.description, color: Colors.red, size: 55),
               ),
-              Center(
-                  child: Text("Basic Details",
-                      style: TextStyle(color: Colors.red))),
+              Center(child: Text("Basic Details", style: TextStyle(color: Colors.red))),
               Padding(
                 padding: const EdgeInsets.all(14.0),
                 child: TextFormField(
@@ -228,7 +253,7 @@ class _AddState extends State<Add> {
                   },
                 ),
               ),
-              a(killController, "Per Kill Prize"),
+              an(killController, "Per Kill Prize"),
               a(matchTypeController, "Match Type"),
               TextButton.icon(
                   onPressed: () async {
@@ -310,14 +335,11 @@ class _AddState extends State<Add> {
               Center(
                   child: Text("Game Essentials",
                       style: TextStyle(color: Colors.green))),
-              a(first, "First Prize ? "),
-              a(second, "Second Prize ?"),
+              an(first, "First Prize ? "),
+              an(second, "Second Prize ?"),
               a(link, "Game Joining Link (  Active before 20 minutes of Start of Event )"),
-              a(ytlink, "Link for Youtube after matched is played ( Active After Eventis overed ) ")
-              ,
+              a(ytlink, "Link for Youtube after matched is played ( Active After Eventis overed ) "),
               an(num, "MAXIMUM No. of Participants"),
-
-
             ],
           ),
         ),
@@ -335,16 +357,16 @@ class _AddState extends State<Add> {
             onPressed: () async {
               int numa = int.parse( feeController.text);
               int max = int.parse( num.text);
-              String s = DateTime.now().microsecondsSinceEpoch.toString();
+              String s = widget.changing?widget.user.id:DateTime.now().microsecondsSinceEpoch.toString();
               GameModel sjjjj = GameModel(Name: nameController.text, About: aboutController.text, Fee: numa,
                   Important: importantController.text, Kill: killController.text, Mapp: mappController.text,
                   Notes: notesController.text, Participants: [],
                   Picture: photoUrl, Type: matchTypeController.text, Version: versionController.text,
                   limit: max, date_e: endd.text, date_f: startd.text,
                   first: first.text, hostedby: _user!.Name, hosteid: _user.uid, hostname: s,
-                  ytlink : ytlink.text , link : link.text , status : "O",
+                  ytlink : ytlink.text , link : link.text , status : "Upcoming",
                   Level: level.text, mode: mode.text, second: second.text, Server: server.text,
-                  Team: level.text, time_e: endt.text, time_s: start.text);
+                  Team: level.text, time_e: endt.text, time_s: start.text, id: s, Rank: rank.text);
               if ( widget.changing ){
                 if ( widget.isleague){
                   try {
@@ -352,7 +374,7 @@ class _AddState extends State<Add> {
                         .instance
                         .collection("League");
                     await collection
-                        .doc(widget.user.hostname)
+                        .doc(widget.user.id)
                         .update(sjjjj.toJson());
                     Navigator.pop(context);
                   } catch (e) {
@@ -371,7 +393,7 @@ class _AddState extends State<Add> {
                         .doc('GAME')
                         .collection(widget.uid);
                     await collection
-                        .doc(widget.user.hostname)
+                        .doc(widget.user.id)
                         .update(sjjjj.toJson());
                     Navigator.pop(context);
                   } catch (e) {
@@ -383,7 +405,8 @@ class _AddState extends State<Add> {
                     );
                   }
                 }
-              }else{
+              }
+              else{
                 if ( widget.isleague){
                   try {
                     CollectionReference collection = FirebaseFirestore
@@ -401,7 +424,8 @@ class _AddState extends State<Add> {
                       ),
                     );
                   }
-                }else{
+                }
+                else{
                   try {
                     CollectionReference collection = FirebaseFirestore
                         .instance
@@ -430,7 +454,50 @@ class _AddState extends State<Add> {
       ],
     );
   }
+  Widget rt(String jh){
+    return InkWell(
+        onTap : () async {
+         level.text = jh;
+          setState(() {
 
+          });
+        }, child : Padding(
+      padding: const EdgeInsets.all(5.0),
+      child: Container(
+          decoration: BoxDecoration(
+            color: level.text==jh ? Colors.blue : Colors.grey.shade100, // Background color of the container
+            borderRadius: BorderRadius.circular(15.0), // Rounded corners
+          ),
+          child : Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Text(jh, style : TextStyle(fontSize: 16, color :   level.text==jh? Colors.white : Colors.black )),
+          )
+      ),
+    )
+    );
+  }
+  Widget rtt(String jh){
+    return InkWell(
+        onTap : () async {
+         mode.text=jh;
+          setState(() {
+
+          });
+        }, child : Padding(
+      padding: const EdgeInsets.all(5.0),
+      child: Container(
+          decoration: BoxDecoration(
+            color: mode.text==jh? Colors.blue : Colors.grey.shade100, // Background color of the container
+            borderRadius: BorderRadius.circular(15.0), // Rounded corners
+          ),
+          child : Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Text(jh, style : TextStyle(fontSize: 16, color :  mode.text==jh ? Colors.white : Colors.black )),
+          )
+      ),
+    )
+    );
+  }
   Widget a(TextEditingController c, String ssg) {
     return Padding(
       padding: const EdgeInsets.all(14.0),
